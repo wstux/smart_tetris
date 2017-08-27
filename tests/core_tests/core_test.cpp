@@ -25,6 +25,7 @@
 #include <ctime>
 #include <iostream>
 #include <iomanip>
+#include <string>
 
 #include "tetris_core.h"
 
@@ -79,6 +80,51 @@ void testGamePause()
   if( oldBoard != tetrisBoard )
   {
     std::cout << "%TEST_FAILED% time=0 testname=testGamePause (core_test) message=error pause game" << std::endl;
+    std::cout << "tetrisBoard:\n" << tetrisBoard << std::endl;
+  }
+}
+
+
+void testFastForward()
+{
+  bool result(true);
+  std::string errorMsg;
+  
+  tetris::core::TetrisCore tetrisCore;
+  tetris::core::TetrisCore::Board oldBoard = tetrisCore.board();
+  tetris::core::TetrisCore::Board tetrisBoard;
+  
+  for(int i = 0; i != 10; ++i)
+    tetrisCore.fastForward();
+  
+  tetrisBoard = tetrisCore.board();
+  result &= tetrisBoard == oldBoard;
+  oldBoard = tetrisBoard;
+  if(!result)
+    errorMsg += "fastForward work without call start function; ";
+  tetrisCore.start();
+  for(int i = 0; i != 10; ++i)
+    tetrisCore.fastForward();
+  
+  tetrisBoard = tetrisCore.board();
+  result &= tetrisBoard != oldBoard;
+  oldBoard = tetrisBoard;
+  if(!result)
+    errorMsg += "fastForward don't work without call start function; ";
+  
+  tetrisCore.pause();
+  for(int i = 0; i != 10; ++i)
+    tetrisCore.fastForward();
+  
+  tetrisBoard = tetrisCore.board();
+  result &= tetrisBoard == oldBoard;
+  if(!result)
+    errorMsg += "fastForward work with call pause function; ";
+  
+  if( !result )
+  {
+    std::cout << "%TEST_FAILED% time=0 testname=testFastForward (core_test) message=error " << errorMsg << std::endl;
+    std::cout << "oldBoard:\n" << oldBoard << std::endl;
     std::cout << "tetrisBoard:\n" << tetrisBoard << std::endl;
   }
 }
@@ -186,6 +232,13 @@ int main(int argc, char** argv)
   testGamePause();
   testTime = clock() - testTime;
   std::cout << "%TEST_FINISHED% time=" << ( ((float)testTime) / CLOCKS_PER_SEC ) << " testGamePause (core_test)" << std::endl;  
+  
+  // testFastForward
+  std::cout << "%TEST_STARTED% testFastForward (core_test)\n" << std::endl;
+  testTime = clock();
+  testFastForward();
+  testTime = clock() - testTime;
+  std::cout << "%TEST_FINISHED% time=" << ( ((float)testTime) / CLOCKS_PER_SEC ) << " testFastForward (core_test)" << std::endl;  
   
   // testMoveLeft
   std::cout << "%TEST_STARTED% testMoveLeft (core_test)\n" << std::endl;

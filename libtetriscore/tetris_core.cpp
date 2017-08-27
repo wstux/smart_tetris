@@ -170,6 +170,9 @@ void TetrisCore::landChanged()
  */
 bool TetrisCore::moveShape(const int xStep, const int yStep, const int rotate)
 {
+  if(!m_isStarted || m_isPause)
+    return false;
+  
   if(!m_curShape.isValid())
     return false;
   
@@ -213,7 +216,7 @@ void TetrisCore::setBoardElement(int x, int y, const ShapeType type)
 
 void TetrisCore::start()
 {
-  if(!m_isPause)
+  if(!m_isStarted && !m_isPause)
   {
     clearBoard();
 
@@ -229,6 +232,8 @@ void TetrisCore::start()
 
     m_curShape.setShapePos( Position(BoardWidth/2, 0) );
   }
+  else if(m_isStarted && m_isPause)
+    m_isPause = false;
 }
 
 
@@ -240,7 +245,8 @@ int TetrisCore::timerDelay() const
 
 void TetrisCore::timeout()
 {
-  
+  if(!m_isStarted || m_isPause)
+    return;
   
   if( moveShape(0, 1, 0) )
     return;
