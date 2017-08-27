@@ -41,20 +41,45 @@ void testGame()
   tetris::core::TetrisCore::Board oldBoard = tetrisCore.board();
   tetris::core::TetrisCore::Board tetrisBoard;
   
+  bool result(true);
   for(int i = 0; i < 30; ++i)
   {
     tetrisCore.timeout();
     tetrisBoard = tetrisCore.board();
     
-    if( tetrisBoard == oldBoard )
-    {
-      std::cout << "%TEST_FAILED% time=0 testname=testGame (core_test) message=error plying to game" << std::endl;
-      std::cout << "tetrisBoard:\n" << tetrisBoard << std::endl;
-      
-      return;
-    }
-    
+    result &= tetrisBoard == oldBoard;
+    if( result )
+      break;
+        
     oldBoard = tetrisBoard;
+  }
+  
+  if( result )
+  {
+    std::cout << "%TEST_FAILED% time=0 testname=testGame (core_test) message=error plying to game" << std::endl;
+    std::cout << "tetrisBoard:\n" << tetrisBoard << std::endl;
+  }
+}
+
+
+void testGamePause()
+{
+  tetris::core::TetrisCore tetrisCore;
+  tetrisCore.start();
+  for(int i = 0; i != 10; ++i)
+    tetrisCore.timeout();
+  
+  tetris::core::TetrisCore::Board oldBoard = tetrisCore.board();
+  
+  tetrisCore.pause();
+  for(int i = 0; i != 10; ++i)
+    tetrisCore.timeout();
+      
+  tetris::core::TetrisCore::Board tetrisBoard = tetrisCore.board();
+  if( oldBoard != tetrisBoard )
+  {
+    std::cout << "%TEST_FAILED% time=0 testname=testGamePause (core_test) message=error pause game" << std::endl;
+    std::cout << "tetrisBoard:\n" << tetrisBoard << std::endl;
   }
 }
 
@@ -63,7 +88,7 @@ void testMoveLeft()
 {
   tetris::core::TetrisCore tetrisCore;
   tetrisCore.start();
-  for(int i = 0; i != 100; ++i)
+  for(int i = 0; i < 100; ++i)
     tetrisCore.moveLeft();
   tetris::core::TetrisCore::Board tetrisBoard = tetrisCore.board();
   
@@ -84,7 +109,7 @@ void testMoveRight()
 {
   tetris::core::TetrisCore tetrisCore;
   tetrisCore.start();
-  for(int i = 0; i != 100; ++i)
+  for(int i = 0; i < 100; ++i)
     tetrisCore.moveRight();
   tetris::core::TetrisCore::Board tetrisBoard = tetrisCore.board();
   
@@ -138,6 +163,12 @@ int main(int argc, char** argv)
   testTime = clock() - testTime;
   std::cout << "%TEST_FINISHED% time=" << ( ((float)testTime) / CLOCKS_PER_SEC ) << " testGame (core_test)" << std::endl;
   
+  // testGamePause
+  std::cout << "%TEST_STARTED% testGamePause (core_test)\n" << std::endl;
+  testTime = clock();
+  testGamePause();
+  testTime = clock() - testTime;
+  std::cout << "%TEST_FINISHED% time=" << ( ((float)testTime) / CLOCKS_PER_SEC ) << " testGamePause (core_test)" << std::endl;  
   
   // testMoveLeft
   std::cout << "%TEST_STARTED% testMoveLeft (core_test)\n" << std::endl;
