@@ -145,6 +145,23 @@ void testStart()
 }
 
 
+void testTimeout()
+{
+  tetris::core::TetrisCore tetrisCore;
+  tetris::core::TetrisCore::Board oldBoard = tetrisCore.board();
+  
+  for(int i = 0; i != 10; ++i)
+    tetrisCore.timeout();
+      
+  tetris::core::TetrisCore::Board tetrisBoard = tetrisCore.board();
+  if( oldBoard != tetrisBoard )
+  {
+    std::cout << "%TEST_FAILED% time=0 testname=testTimeout (core_test) message=error game playing without preess start" << std::endl;
+    std::cout << "tetrisBoard:\n" << tetrisBoard << std::endl;
+  }
+}
+
+
 int main(int argc, char** argv)
 {
   clock_t allTestsTime;
@@ -190,6 +207,13 @@ int main(int argc, char** argv)
   testStart();
   testTime = clock() - testTime;
   std::cout << "%TEST_FINISHED% time=" << ( ((float)testTime) / CLOCKS_PER_SEC ) << " testStart (core_test)" << std::endl;
+  
+  // testTimeout
+  std::cout << "%TEST_STARTED% testTimeout (core_test)\n" << std::endl;
+  testTime = clock();
+  testTimeout();
+  testTime = clock() - testTime;
+  std::cout << "%TEST_FINISHED% time=" << ( ((float)testTime) / CLOCKS_PER_SEC ) << " testTimeout (core_test)" << std::endl;
 
   allTestsTime = clock() - allTestsTime;
   std::cout << "%SUITE_FINISHED% time=" << ( ((float)allTestsTime) / CLOCKS_PER_SEC ) << std::endl;
