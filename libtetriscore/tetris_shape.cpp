@@ -289,7 +289,7 @@ void Shape::setShape(const ShapeType type, const RotateType rotate)
 }
 
 
-bool Shape::operator==(const Shape &right)
+bool Shape::operator==(const Shape &right) const
 {
   if(m_type != right.m_type)
     return false;
@@ -311,13 +311,13 @@ bool Shape::operator==(const Shape &right)
 }
 
 
-bool Shape::operator!=(const Shape &right)
+bool Shape::operator!=(const Shape &right) const
 {
   return !(*this == right);
 }
 
 
-std::ostream& operator<<(std::ostream &os, const Shape& shape)
+std::ostream& operator<<(std::ostream &os, const Shape &shape)
 {
   std::array< std::array<ShapeType, 4>, 4 > printArr = {};
   for(const Position &pos : shape.m_shape)
