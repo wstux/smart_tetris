@@ -54,19 +54,6 @@ void testShape()
 
 void testShapeElements()
 {
-  //****************************************************************************
-  //  Comparator
-  struct ShapeBlockComparator
-  {
-    explicit ShapeBlockComparator(tetris::core::Position origPos) : m_origPos(origPos) { }
-
-    inline bool operator()(const tetris::core::Position & pos) const { return m_origPos == pos; }
-
-  private:
-    tetris::core::Position m_origPos;
-  };
-  //****************************************************************************
-
   srand(time(NULL));
   
   tetris::core::Shape shape;
@@ -80,7 +67,7 @@ void testShapeElements()
   bool result(true);
   for(const tetris::core::Position &origPos : shape.block())
   {
-    if( std::find_if( block.begin(), block.end(), ShapeBlockComparator(origPos) ) == block.end())
+    if( std::find_if( block.begin(), block.end(), [&origPos](const tetris::core::Position &pos) -> bool { return origPos == pos; } ) == block.end())
       result = false;
   }
     
