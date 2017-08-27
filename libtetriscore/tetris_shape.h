@@ -70,12 +70,12 @@ public:
     , y(yPos)
   {}
   
-  bool operator==(const Position &right)
+  bool operator==(const Position &right) const
   {
     return (x == right.x) && (y == right.y);
   }
   
-  bool operator!=(const Position &right)
+  bool operator!=(const Position &right) const
   {
     return (x != right.x) || (y != right.y);
   }

@@ -21,6 +21,7 @@
  * 
  */
 
+#include <algorithm>
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
@@ -47,6 +48,46 @@ void testShape()
     std::cout << "%TEST_FAILED% time=0 testname=testShape (shape_test) message=error create shape" << std::endl;
     std::cout << "shape:\n" << shape << std::endl;
     std::cout << "newShape:\n" << newShape << std::endl;
+  }
+}
+
+
+void testShapeElements()
+{
+  //****************************************************************************
+  //  Comparator
+  struct ShapeBlockComparator
+  {
+    explicit ShapeBlockComparator(tetris::core::Position origPos) : m_origPos(origPos) { }
+
+    inline bool operator()(const tetris::core::Position & pos) const { return m_origPos == pos; }
+
+  private:
+    tetris::core::Position m_origPos;
+  };
+  //****************************************************************************
+
+  srand(time(NULL));
+  
+  tetris::core::Shape shape;
+  shape.setShape(tetris::core::ShapeType::LShape, tetris::core::Shape::RotateType::Bottom);
+  tetris::core::ShapeBlock block;
+  block[0] = tetris::core::Position(0, 1);
+  block[1] = tetris::core::Position(1, 1);
+  block[2] = tetris::core::Position(2, 1);
+  block[3] = tetris::core::Position(0, 2);
+  
+  bool result(true);
+  for(const tetris::core::Position &origPos : shape.block())
+  {
+    if( std::find_if( block.begin(), block.end(), ShapeBlockComparator(origPos) ) == block.end())
+      result = false;
+  }
+    
+  if( !result )
+  {
+    std::cout << "%TEST_FAILED% time=0 testname=testShapeElements (shape_test) message=error shape element positions" << std::endl;
+    std::cout << "shape:\n" << shape << std::endl;
   }
 }
 
@@ -133,6 +174,13 @@ int main(int argc, char** argv)
   testShape();
   testTime = clock() - testTime;
   std::cout << "%TEST_FINISHED% time=" << ( ((float)testTime) / CLOCKS_PER_SEC ) << " testShape (shape_test)" << std::endl;
+  
+  // testShapeElements
+  std::cout << "%TEST_STARTED% testShapeElements (shape_test)" << std::endl;
+  testTime = clock();
+  testShapeElements();
+  testTime = clock() - testTime;
+  std::cout << "%TEST_FINISHED% time=" << ( ((float)testTime) / CLOCKS_PER_SEC ) << " testShapeElements (shape_test)" << std::endl;
 
   // testRotate
   std::cout << "%TEST_STARTED% testRotate (shape_test)" << std::endl;
