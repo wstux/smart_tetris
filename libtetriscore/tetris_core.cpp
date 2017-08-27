@@ -240,6 +240,8 @@ int TetrisCore::timerDelay() const
 
 void TetrisCore::timeout()
 {
+  
+  
   if( moveShape(0, 1, 0) )
     return;
   
