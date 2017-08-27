@@ -230,7 +230,8 @@ void TetrisCore::start()
     m_curShape.setRandomShape();
     m_nextShape.setRandomShape();
 
-    m_curShape.setShapePos( Position(BoardWidth/2, 0) );
+//    m_curShape.setShapePos( Position(BoardWidth/2, 0) );
+    m_curShape.setShapePos( Position(BoardWidth/2 - 2 + m_curShape.x(), m_curShape.y()) );
   }
   else if(m_isStarted && m_isPause)
     m_isPause = false;
@@ -256,7 +257,7 @@ void TetrisCore::timeout()
   m_curShape = m_nextShape;
   m_nextShape.setRandomShape();
   
-  m_curShape.setShapePos( Position(BoardWidth/2, 0) );
+  m_curShape.setShapePos( Position(BoardWidth/2 - 2 + m_curShape.x(), m_curShape.y()) );
 }
 
 

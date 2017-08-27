@@ -24,6 +24,7 @@
 #include "tetris_shape.h"
 
 #include <cassert>
+#include <cmath>
 #include <cstdlib>
 #include <iostream>
 
@@ -266,6 +267,16 @@ void Shape::setRandomShape()
   RotateType randRotation = (RotateType)(rand() % RotateType::RotateType_size);
   
   setShape(randType, randRotation);
+  
+  int minX(4);
+  int minY(4);
+  for(const Position &pos : m_shape)
+  {
+    minX = std::min(pos.x, minX);
+    minY = std::min(pos.y, minY);
+  }
+  
+  setShapePos( Position(minX, -minY) );
 }
 
 
