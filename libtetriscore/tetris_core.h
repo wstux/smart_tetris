@@ -45,36 +45,69 @@ private:
 public:
   typedef std::vector<ShapeType> BoardLine;
   
-  typedef std::vector< std::vector<ShapeType> > Board;
+  typedef std::vector< BoardLine > Board;
       
       
 public:
   TetrisCore();
   
-  ~TetrisCore() {}
-  
-//  Board board() { return m_board; }
-  
+  ~TetrisCore();
+    
+    /// @fn Board board() const
+    /// @brief Запрос актуального игрового поля
+    /// @return Актуальное игровое поле
   Board board() const;
   
+    /// @fn int boardHeight() const
+    /// @brief Запрос высоты игрового поля
+    /// @return Высота игрового поля
   int boardHeight() const { return BoardHeight; }
   
+    /// @fn int boardWidth() const
+    /// @brief Запрос ширины игрового поля
+    /// @return Ширина игрового поля
   int boardWidth() const { return BoardWidth; }
   
   void fastForward();
   
-  int level() { return m_level; }
+    /// @fn int level() const
+    /// @brief Запрос уровня
+    /// @return Уровень
+  int level() const { return m_level; }
   
+    /// @fn bool moveLeft()
+    /// @brief Смещение игрового блока на одну ячейку влево
+    /// @return Флаг успешности операции
+    ///         true - блок смещен влево
+    ///         false - блок не удалось сместить
   bool moveLeft() { return moveShape(-1, 0, 0); }
 
+    /// @fn bool moveRight()
+    /// @brief Смещение игрового блока на одну ячейку вправо
+    /// @return Флаг успешности операции
+    ///         true - блок смещен вправоо
+    ///         false - блок не удалось сместить
   bool moveRight() { return moveShape(1, 0, 0); }
 
   void pause();
   
+    /// @fn bool rotateLeft()
+    /// @brief Поворот игрового блока по часовой стрелке
+    /// @return Флаг успешности операции
+    ///         true - блок удалось повернуть
+    ///         false - блок не удалось повернуть
   bool rotateLeft() { return moveShape(0, 0, -1); }
 
+    /// @fn bool rotateRight()
+    /// @brief Поворот игрового блока против часовой стрелки
+    /// @return Флаг успешности операции
+    ///         true - блок удалось повернуть
+    ///         false - блок не удалось повернуть
   bool rotateRight() { return moveShape(0, 0, 1); }
   
+    /// @fn int score() const
+    /// @brief Запрос текущего игрового счета
+    /// @return Текущий игровой счет
   int score() const { return m_score; }
   
   void start();
@@ -86,45 +119,55 @@ public:
   
   
 protected:
-  bool destroyLine(const int line);
-  
-  
-private:
   ShapeType boardElement(int x, int y) const;
   
   void clearBoard();
   
+  bool destroyLine(const int line);
+  
   void landChanged();
   
-    /// @brief Function for moving shape on board
-    /// @param const int xStep - step on X axis
-    /// @param const int yStep - step on Y axis
-    /// @param const int rotate - rotate
-    /// @return Applying operation flag
+    /// @fn bool moveShape(const int xStep, const int yStep, const int rotate)
+    /// @brief Функция изменения положения блока на игровом поле
+    /// @param const int xStep - шаг по оси X
+    /// @param const int yStep - шаг по оси Y
+    /// @param const int rotate - поворот блока
+    ///         1 - поворот игрового блока против часовой стрелки
+    ///         -1 - поворот игрового блока по часовой стрелке
+    /// @return Флаг успешности операции
+    ///         true - блок перемещен
+    ///         false - блок не удалось переместить
   bool moveShape(const int xStep, const int yStep, const int rotate);
   
   void setBoardElement(int x, int y, const ShapeType type);
   
   
-public:
-    /// Current shape
+private:
+    /// Текущий игровой блок
   Shape m_curShape;
   
-    /// Next shape to be used
+    /// Следующий игровой блок
   Shape m_nextShape;
   
+    /// Игровая доска
   Board m_board;
   
+    /// Флаг запущенности игры
   bool m_isStarted;
   
+    /// Флаг остановки игры на паузу
   bool m_isPause;
   
+    /// Флаг окончания игры
   bool m_isGameOver;
   
+    /// Текущий уровень
   int m_level;
   
+    /// Текущий счет
   int m_score;
   
+    /// Количество уничтоженных линий
   int m_destroedLines;
 };
 

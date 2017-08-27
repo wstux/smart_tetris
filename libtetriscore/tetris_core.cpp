@@ -51,6 +51,14 @@ TetrisCore::TetrisCore()
 }
 
 
+TetrisCore::~TetrisCore()
+{}
+
+
+/*! @fn Board board() const
+ *  @brief Запрос актуального игрового поля
+ *  @return Актуальное игровое поле
+ */
 TetrisCore::Board TetrisCore::board() const
 {
   Board board = m_board;
@@ -149,11 +157,17 @@ void TetrisCore::landChanged()
 }
 
 
-/// @brief Function for moving shape on board
-/// @param const int xStep - step on X axis
-/// @param const int yStep - step on Y axis
-/// @param const int rotate - rotate
-/// @return Applying operation flag
+/*! @fn bool moveShape(const int xStep, const int yStep, const int rotate)
+ *  @brief Функция изменения положения блока на игровом поле
+ *  @param const int xStep - шаг по оси X
+ *  @param const int yStep - шаг по оси Y
+ *  @param const int rotate - поворот блока
+ *          1 - поворот игрового блока против часовой стрелки
+ *          -1 - поворот игрового блока по часовой стрелке
+ *  @return Флаг успешности операции
+ *          true - блок перемещен
+ *          false - блок не удалось переместить
+ */
 bool TetrisCore::moveShape(const int xStep, const int yStep, const int rotate)
 {
   if(!m_curShape.isValid())
