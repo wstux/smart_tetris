@@ -238,7 +238,46 @@ void TetrisCore::timeout()
 }
 
 
-std::ostream& operator<<(std::ostream &os, const TetrisCore::Board& board)
+bool operator==(const TetrisCore::Board &left, const TetrisCore::Board &right)
+{
+  if( (left.size() == 0) || (right.size() == 0) )
+    return false;
+  if(left.size() != right.size())
+    return false;
+    
+  bool result(true);
+  const unsigned int width = left.front().size();
+  for(unsigned int y = 0; y < left.size(); ++y)
+  {
+    if(left[y].size() != width || right[y].size() != width)
+    {
+      result = false;
+      break;
+    }
+    
+    for(unsigned int x = 0; x < width; ++x)
+    {
+      if( left[y][x] != right[y][x])
+      {
+        result = false;
+        break;
+      }
+    }
+    
+    if( !result )
+      break;
+  }
+  
+  return result;
+}
+
+bool operator!=(const TetrisCore::Board &left, const TetrisCore::Board &right)
+{
+  return !(left == right);
+}
+
+
+std::ostream& operator<<(std::ostream &os, const TetrisCore::Board &board)
 {  
   for(unsigned int i = 0; i < board.size(); ++i)
   {

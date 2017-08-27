@@ -129,7 +129,11 @@ public:
 };
 
 
-std::ostream& operator<<(std::ostream &os, const TetrisCore::Board& board);
+bool operator==(const TetrisCore::Board &left, const TetrisCore::Board &right);
+
+bool operator!=(const TetrisCore::Board &left, const TetrisCore::Board &right);
+
+std::ostream& operator<<(std::ostream &os, const TetrisCore::Board &board);
 
 
 } // namespace core

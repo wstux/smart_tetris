@@ -139,11 +139,11 @@ public:
   
   int y() const { return m_shapePos.y; }
   
-  bool operator==(const Shape &right);
+  bool operator==(const Shape &right) const;
   
-  bool operator!=(const Shape &right);
+  bool operator!=(const Shape &right) const;
   
-  friend std::ostream& operator<<(std::ostream &os, const Shape& shape);
+  friend std::ostream& operator<<(std::ostream &os, const Shape &shape);
   
   
 private:
