@@ -131,7 +131,7 @@ int TetrisCore::getShapeWidth(const Shape &shape)
     maxX = std::max(pos.x, maxX);
   }
   
-  return (maxX - minX);
+  return (maxX - minX + 1);
 }
 
 
@@ -216,19 +216,7 @@ bool TetrisCore::moveShape(const int xStep, const int yStep, const int rotate)
     return false;
   
   m_curShape.rotate(rotate);
-  
-//  bool isCanMove(true);
-//  for(const Position &pos : m_curShape.block())
-//  {
-//    int x = m_curShape.x() + pos.x + xStep;
-//    int y = m_curShape.y() + pos.y + yStep;
-//    if( x < 0 || x >= BoardWidth || y >= BoardHeight || boardElement(x, y) != ShapeType::NoShape )
-//    {
-//        isCanMove = false;
-//        break;
-//    }
-//  }
-  
+    
   bool isCanMove = isValidPosition(m_curShape, xStep, yStep);
   if(!isCanMove)
     m_curShape.rotate(-rotate);
@@ -273,7 +261,9 @@ void TetrisCore::start()
   m_nextShape.setRandomShape();
 
 //    m_curShape.setShapePos( Position(BoardWidth/2, 0) );
-  m_curShape.setShapePos( Position(BoardWidth/2 - 2 + m_curShape.x(), m_curShape.y()) );
+  int xPos = ( BoardWidth - getShapeWidth(m_curShape) )/2 - m_curShape.x();
+  m_curShape.setShapePos( Position(xPos, m_curShape.y()) );
+//  m_curShape.setShapePos( Position(BoardWidth/2 - 2 + m_curShape.x(), m_curShape.y()) );
 }
 
 
@@ -296,7 +286,10 @@ void TetrisCore::timeout()
 //  m_curShape = m_nextShape;
 //  m_nextShape.setRandomShape();
   
-  Position pos( BoardWidth/2 - 2 + m_nextShape.x(), m_nextShape.y() );
+  int xPos = ( BoardWidth - getShapeWidth(m_nextShape) )/2 - m_nextShape.x();
+  std::cout << "xPos = " << xPos << "; getShapeWidth(m_nextShape) = " << getShapeWidth(m_nextShape) << "; m_nextShape.x() = " << m_nextShape.x() << std::endl;
+  Position pos( xPos, m_nextShape.y() );
+//  Position pos( BoardWidth/2 - 2 + m_nextShape.x(), m_nextShape.y() );
   m_nextShape.setShapePos(pos);
   if( isValidPosition(m_nextShape, 0, 0) )
   {
