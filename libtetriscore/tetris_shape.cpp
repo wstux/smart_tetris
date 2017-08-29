@@ -51,7 +51,7 @@ Shape::Shape(const ShapeType type, const RotateType rotate)
 
 
 
-ShapeBlock Shape::getShapeBlock(const ShapeType type, const RotateType rotate)
+ShapeBlock Shape::getShapeBlock(const ShapeType type, const RotateType rotate) const
 {
   static const int block_table[7][4][16] =
   {
@@ -277,12 +277,6 @@ void Shape::setRandomShape()
   }
   
   setShapePos( Position(minX, -minY) );
-}
-
-
-void Shape::setShape(const ShapeType type)
-{
-  setShape(type, RotateType::Bottom);
 }
 
 

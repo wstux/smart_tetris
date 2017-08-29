@@ -70,6 +70,12 @@ public:
   
   void fastForward();
   
+  bool isGameOver() const { return m_isGameOver; }
+  
+  bool isGamePaused() const { return m_isPause; }
+  
+  bool isGameStarted() const { return m_isStarted; }
+  
     /// @fn int level() const
     /// @brief Запрос уровня
     /// @return Уровень
@@ -125,6 +131,8 @@ protected:
   
   bool destroyLine(const int line);
   
+  bool isValidPosition(const Shape &shape, const int xStep, const int yStep);
+  
   void landChanged();
   
     /// @fn bool moveShape(const int xStep, const int yStep, const int rotate)
@@ -140,6 +148,10 @@ protected:
   bool moveShape(const int xStep, const int yStep, const int rotate);
   
   void setBoardElement(int x, int y, const ShapeType type);
+  
+  
+private:
+  int getShapeWidth(const Shape &shape);
   
   
 private:

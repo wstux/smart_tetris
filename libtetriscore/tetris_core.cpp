@@ -62,8 +62,15 @@ TetrisCore::~TetrisCore()
 TetrisCore::Board TetrisCore::board() const
 {
   Board board = m_board;
+  if(!m_curShape.isValid())
+    return board;
+  
   for(const Position &pos : m_curShape.block())
+  {
+    assert( (m_curShape.x()+pos.x >= 0) && (m_curShape.x()+pos.x < BoardWidth) );
+    assert( (m_curShape.y()+pos.y >= 0) && (m_curShape.y()+pos.y < BoardHeight) );
     board[ m_curShape.y()+pos.y ][ m_curShape.x()+pos.x ] = m_curShape.type();
+  }
   
   return board;
 }
@@ -111,6 +118,38 @@ void TetrisCore::fastForward()
     return;
   
   timeout();
+}
+
+
+int TetrisCore::getShapeWidth(const Shape &shape)
+{
+  int minX(4);
+  int maxX(0);
+  for(const Position &pos : shape.block())
+  {
+    minX = std::min(pos.x, minX);
+    maxX = std::max(pos.x, maxX);
+  }
+  
+  return (maxX - minX);
+}
+
+
+bool TetrisCore::isValidPosition(const Shape &shape, const int xStep, const int yStep)
+{
+  bool isCanMove(true);
+  for(const Position &pos : shape.block())
+  {
+    int x = shape.x() + pos.x + xStep;
+    int y = shape.y() + pos.y + yStep;
+    if( x < 0 || x >= BoardWidth || y < 0 || y >= BoardHeight || boardElement(x, y) != ShapeType::NoShape )
+    {
+        isCanMove = false;
+        break;
+    }
+  }
+  
+  return isCanMove;
 }
 
 
@@ -178,18 +217,19 @@ bool TetrisCore::moveShape(const int xStep, const int yStep, const int rotate)
   
   m_curShape.rotate(rotate);
   
-  bool isCanMove(true);
-  for(const Position &pos : m_curShape.block())
-  {
-    int x = m_curShape.x() + pos.x + xStep;
-    int y = m_curShape.y() + pos.y + yStep;
-    if( x < 0 || x >= BoardWidth || y >= BoardHeight || boardElement(x, y) != ShapeType::NoShape )
-    {
-        isCanMove = false;
-        break;
-    }
-  }
+//  bool isCanMove(true);
+//  for(const Position &pos : m_curShape.block())
+//  {
+//    int x = m_curShape.x() + pos.x + xStep;
+//    int y = m_curShape.y() + pos.y + yStep;
+//    if( x < 0 || x >= BoardWidth || y >= BoardHeight || boardElement(x, y) != ShapeType::NoShape )
+//    {
+//        isCanMove = false;
+//        break;
+//    }
+//  }
   
+  bool isCanMove = isValidPosition(m_curShape, xStep, yStep);
   if(!isCanMove)
     m_curShape.rotate(-rotate);
   else
@@ -201,7 +241,7 @@ bool TetrisCore::moveShape(const int xStep, const int yStep, const int rotate)
 
 void TetrisCore::pause()
 {
-  m_isPause = true;
+  m_isPause = !m_isPause;
 }
 
 
@@ -216,25 +256,24 @@ void TetrisCore::setBoardElement(int x, int y, const ShapeType type)
 
 void TetrisCore::start()
 {
-  if(!m_isStarted && !m_isPause)
-  {
-    clearBoard();
+  if(m_isStarted)
+    return;
+  
+  clearBoard();
 
-    m_level = 1;
-    m_score = 0;
-    m_destroedLines = 0;
+  m_level = 1;
+  m_score = 0;
+  m_destroedLines = 0;
 
-    m_isStarted = true;
-    m_isPause = false;
+  m_isStarted = true;
+  m_isPause = false;
+  m_isGameOver = false;
 
-    m_curShape.setRandomShape();
-    m_nextShape.setRandomShape();
+  m_curShape.setRandomShape();
+  m_nextShape.setRandomShape();
 
 //    m_curShape.setShapePos( Position(BoardWidth/2, 0) );
-    m_curShape.setShapePos( Position(BoardWidth/2 - 2 + m_curShape.x(), m_curShape.y()) );
-  }
-  else if(m_isStarted && m_isPause)
-    m_isPause = false;
+  m_curShape.setShapePos( Position(BoardWidth/2 - 2 + m_curShape.x(), m_curShape.y()) );
 }
 
 
@@ -254,10 +293,21 @@ void TetrisCore::timeout()
   
   landChanged();
   
-  m_curShape = m_nextShape;
-  m_nextShape.setRandomShape();
+//  m_curShape = m_nextShape;
+//  m_nextShape.setRandomShape();
   
-  m_curShape.setShapePos( Position(BoardWidth/2 - 2 + m_curShape.x(), m_curShape.y()) );
+  Position pos( BoardWidth/2 - 2 + m_nextShape.x(), m_nextShape.y() );
+  m_nextShape.setShapePos(pos);
+  if( isValidPosition(m_nextShape, 0, 0) )
+  {
+    m_curShape = m_nextShape;
+    m_nextShape.setRandomShape();
+  }
+  else
+  {
+    m_isStarted = false;
+    m_isGameOver = true;
+  }
 }
 
 

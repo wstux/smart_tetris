@@ -127,8 +127,6 @@ public:
   
   void setRandomShape();
   
-  void setShape(const ShapeType type);
-  
   void setShape(const ShapeType type, const RotateType rotate);
   
   void setShapePos(const Position &pos) { m_shapePos = pos; }
@@ -147,7 +145,7 @@ public:
   
   
 private:
-  ShapeBlock getShapeBlock(const ShapeType type, const RotateType rotate);
+  ShapeBlock getShapeBlock(const ShapeType type, const RotateType rotate) const;
   
   
 private:
@@ -158,6 +156,10 @@ private:
   RotateType m_rotate;
   
   ShapeBlock m_shape;
+  
+  int m_width;
+  
+  int m_height;
 };
 
 
