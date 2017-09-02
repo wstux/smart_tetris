@@ -39,7 +39,7 @@ namespace core
 class TetrisCore
 {
 private:
-  enum { BoardWidth = 12, BoardHeight = 22 };
+  enum { BoardWidth = 12, BoardHeight = 20 };
   
   
 public:
@@ -74,7 +74,7 @@ public:
   
   bool isGamePaused() const { return m_isPause; }
   
-  bool isGameStarted() const { return m_isStarted; }
+  bool isGameRun() const { return m_isStarted; }
   
     /// @fn int level() const
     /// @brief Запрос уровня
@@ -95,6 +95,8 @@ public:
     ///         false - блок не удалось сместить
   bool moveRight() { return moveShape(1, 0, 0); }
 
+  Shape nextShape() const;
+  
   void pause();
   
     /// @fn bool rotateLeft()
@@ -118,7 +120,9 @@ public:
   
   void start();
   
-  void timeout();
+  void stop();
+  
+  void delayTimeout();
   
     /// @return Timeout step-timer in msecs
   int timerDelay() const;

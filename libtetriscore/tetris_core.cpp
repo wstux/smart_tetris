@@ -41,7 +41,7 @@ TetrisCore::TetrisCore()
   : m_isStarted(false)
   , m_isPause(false)
   , m_isGameOver(false)
-  , m_level(1)
+  , m_level(0)
   , m_score(0)
   , m_destroedLines(0)
 {
@@ -117,7 +117,7 @@ void TetrisCore::fastForward()
   if( !moveShape (0, 1, 0) )
     return;
   
-  timeout();
+  delayTimeout();
 }
 
 
@@ -227,9 +227,16 @@ bool TetrisCore::moveShape(const int xStep, const int yStep, const int rotate)
 }
 
 
+Shape TetrisCore::nextShape() const
+{
+  return m_nextShape;
+}
+
+
 void TetrisCore::pause()
 {
-  m_isPause = !m_isPause;
+  if(m_isStarted)
+    m_isPause = !m_isPause;
 }
 
 
@@ -260,10 +267,25 @@ void TetrisCore::start()
   m_curShape.setRandomShape();
   m_nextShape.setRandomShape();
 
-//    m_curShape.setShapePos( Position(BoardWidth/2, 0) );
   int xPos = ( BoardWidth - getShapeWidth(m_curShape) )/2 - m_curShape.x();
   m_curShape.setShapePos( Position(xPos, m_curShape.y()) );
-//  m_curShape.setShapePos( Position(BoardWidth/2 - 2 + m_curShape.x(), m_curShape.y()) );
+}
+
+
+void TetrisCore::stop()
+{
+  clearBoard();
+
+  m_level = 0;
+  m_score = 0;
+  m_destroedLines = 0;
+
+  m_isStarted = false;
+  m_isPause = false;
+  m_isGameOver = false;
+  
+  m_curShape.setShape(ShapeType::NoShape, Shape::RotateType::Bottom);
+  m_nextShape.setShape(ShapeType::NoShape, Shape::RotateType::Bottom);
 }
 
 
@@ -273,7 +295,7 @@ int TetrisCore::timerDelay() const
 }
 
 
-void TetrisCore::timeout()
+void TetrisCore::delayTimeout()
 {
   if(!m_isStarted || m_isPause)
     return;
@@ -287,7 +309,7 @@ void TetrisCore::timeout()
 //  m_nextShape.setRandomShape();
   
   int xPos = ( BoardWidth - getShapeWidth(m_nextShape) )/2 - m_nextShape.x();
-  std::cout << "xPos = " << xPos << "; getShapeWidth(m_nextShape) = " << getShapeWidth(m_nextShape) << "; m_nextShape.x() = " << m_nextShape.x() << std::endl;
+//  std::cout << "xPos = " << xPos << "; getShapeWidth(m_nextShape) = " << getShapeWidth(m_nextShape) << "; m_nextShape.x() = " << m_nextShape.x() << std::endl;
   Position pos( xPos, m_nextShape.y() );
 //  Position pos( BoardWidth/2 - 2 + m_nextShape.x(), m_nextShape.y() );
   m_nextShape.setShapePos(pos);
