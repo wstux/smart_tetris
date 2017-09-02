@@ -70,6 +70,8 @@ public:
   
   void fastForward();
   
+  void gameStep();
+  
   bool isGameOver() const { return m_isGameOver; }
   
   bool isGamePaused() const { return m_isPause; }
@@ -121,8 +123,6 @@ public:
   void start();
   
   void stop();
-  
-  void delayTimeout();
   
     /// @return Timeout step-timer in msecs
   int timerDelay() const;

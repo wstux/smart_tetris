@@ -45,7 +45,7 @@ void testGame()
   bool result(true);
   for(int i = 0; i < 30; ++i)
   {
-    tetrisCore.delayTimeout();
+    tetrisCore.gameStep();
     tetrisBoard = tetrisCore.board();
     
     result &= tetrisBoard == oldBoard;
@@ -68,13 +68,13 @@ void testGamePause()
   tetris::core::TetrisCore tetrisCore;
   tetrisCore.start();
   for(int i = 0; i != 10; ++i)
-    tetrisCore.delayTimeout();
+    tetrisCore.gameStep();
   
   tetris::core::TetrisCore::Board oldBoard = tetrisCore.board();
   
   tetrisCore.pause();
   for(int i = 0; i != 10; ++i)
-    tetrisCore.delayTimeout();
+    tetrisCore.gameStep();
       
   tetris::core::TetrisCore::Board tetrisBoard = tetrisCore.board();
   if( oldBoard != tetrisBoard )
@@ -197,7 +197,7 @@ void testTimeout()
   tetris::core::TetrisCore::Board oldBoard = tetrisCore.board();
   
   for(int i = 0; i != 10; ++i)
-    tetrisCore.delayTimeout();
+    tetrisCore.gameStep();
       
   tetris::core::TetrisCore::Board tetrisBoard = tetrisCore.board();
   if( oldBoard != tetrisBoard )

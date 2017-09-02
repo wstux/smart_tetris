@@ -117,7 +117,33 @@ void TetrisCore::fastForward()
   if( !moveShape (0, 1, 0) )
     return;
   
-  delayTimeout();
+  gameStep();
+}
+
+
+void TetrisCore::gameStep()
+{
+  if(!m_isStarted || m_isPause)
+    return;
+  
+  if( moveShape(0, 1, 0) )
+    return;
+  
+  landChanged();
+  
+  int xPos = ( BoardWidth - getShapeWidth(m_nextShape) )/2 - m_nextShape.x();
+  Position pos( xPos, m_nextShape.y() );
+  m_nextShape.setShapePos(pos);
+  if( isValidPosition(m_nextShape, 0, 0) )
+  {
+    m_curShape = m_nextShape;
+    m_nextShape.setRandomShape();
+  }
+  else
+  {
+    m_isStarted = false;
+    m_isGameOver = true;
+  }
 }
 
 
@@ -292,37 +318,6 @@ void TetrisCore::stop()
 int TetrisCore::timerDelay() const
 {
   return ( 100 + 900 * pow(0.75, m_level-1) );
-}
-
-
-void TetrisCore::delayTimeout()
-{
-  if(!m_isStarted || m_isPause)
-    return;
-  
-  if( moveShape(0, 1, 0) )
-    return;
-  
-  landChanged();
-  
-//  m_curShape = m_nextShape;
-//  m_nextShape.setRandomShape();
-  
-  int xPos = ( BoardWidth - getShapeWidth(m_nextShape) )/2 - m_nextShape.x();
-//  std::cout << "xPos = " << xPos << "; getShapeWidth(m_nextShape) = " << getShapeWidth(m_nextShape) << "; m_nextShape.x() = " << m_nextShape.x() << std::endl;
-  Position pos( xPos, m_nextShape.y() );
-//  Position pos( BoardWidth/2 - 2 + m_nextShape.x(), m_nextShape.y() );
-  m_nextShape.setShapePos(pos);
-  if( isValidPosition(m_nextShape, 0, 0) )
-  {
-    m_curShape = m_nextShape;
-    m_nextShape.setRandomShape();
-  }
-  else
-  {
-    m_isStarted = false;
-    m_isGameOver = true;
-  }
 }
 
 

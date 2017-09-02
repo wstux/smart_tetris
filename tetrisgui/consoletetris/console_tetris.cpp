@@ -301,7 +301,7 @@ void ConsoleTetris::show()
     
     if(m_pTimer->isTimeout())
     {
-      m_pCore->delayTimeout();
+      m_pCore->gameStep();
       m_pTimer->startTimer( m_pCore->timerDelay() );
     }
     
