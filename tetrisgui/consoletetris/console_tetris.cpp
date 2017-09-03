@@ -28,7 +28,6 @@
 
 #include "tetris_core.h"
 #include "tetris_shape.h"
-#include "tetris_window.h"
 
 
 #define KEY_ESC 27
