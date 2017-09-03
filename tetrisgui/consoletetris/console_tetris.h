@@ -24,7 +24,9 @@
 #ifndef CONSOLE_TETRIS_H
 #define CONSOLE_TETRIS_H
 
+#include <map>
 #include <ncurses.h>
+#include <string>
 
 
 namespace tetris
@@ -51,8 +53,12 @@ private:
     
     Pos_Stop  = 4,
     
-    Pos_Quit  = 6
+    Pos_Quit  = 6,
+    
+    Pos_Size
   };
+  
+  typedef std::map<CtrlPos, std::string> ButtonMap;
   
   
 public:
@@ -101,6 +107,10 @@ private:
   Timer *m_pTimer;
   
   const int m_menuColorId;
+  
+  CtrlPos m_pressedButton;
+  
+  ButtonMap m_btnMap;
 };
 
 

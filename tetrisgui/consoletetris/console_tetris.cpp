@@ -25,6 +25,7 @@
 
 #include <array>
 #include <ctime>
+#include <utility>
 
 #include "tetris_core.h"
 #include "tetris_shape.h"
@@ -96,6 +97,7 @@ ConsoleTetris::ConsoleTetris()
   , m_pNextShapeWnd(NULL)
   , m_pTimer(new Timer())
   , m_menuColorId(core::ShapeType::ShapeType_size)
+  , m_pressedButton(CtrlPos::Pos_Size)
 {
   initscr();
   init();
@@ -117,8 +119,12 @@ ConsoleTetris::ConsoleTetris()
   m_pScoreWnd = newwin(height, width, yPos, xPos);
   
   yPos += height + 3*stepY;
-  height = CtrlPos::Pos_Quit + 1;
-  m_pCtrlWnd = newwin(height, width, yPos, xPos);
+  m_pCtrlWnd = newwin(CtrlPos::Pos_Size, width, yPos, xPos);
+  
+  m_btnMap.insert( std::pair<CtrlPos, std::string>(CtrlPos::Pos_Start, " Start ") );
+  m_btnMap.insert( std::pair<CtrlPos, std::string>(CtrlPos::Pos_Pause, " Pause ") );
+  m_btnMap.insert( std::pair<CtrlPos, std::string>(CtrlPos::Pos_Stop , " Stop  ") );
+  m_btnMap.insert( std::pair<CtrlPos, std::string>(CtrlPos::Pos_Quit , " Quit  ") );
 }
 
 
@@ -139,7 +145,7 @@ void ConsoleTetris::init()
   timeout(0);           // не блокировать по getch()
   curs_set(0);          // курсор невидимый
   
-  mousemask(BUTTON1_CLICKED, NULL);
+  mousemask(BUTTON1_RELEASED | BUTTON1_PRESSED, NULL);
   
   initColors();
 }
@@ -166,29 +172,36 @@ void ConsoleTetris::mouseEvent()
   if(getmouse(&event) != OK)
     return;
   
+  if(event.bstate & BUTTON1_RELEASED)
+    m_pressedButton = CtrlPos::Pos_Size;
+  
   if((event.x < m_pCtrlWnd->_begx) || (event.x > m_pCtrlWnd->_begx+m_pCtrlWnd->_maxx))
     return;
   if((event.y < m_pCtrlWnd->_begy) || (event.y > m_pCtrlWnd->_begy+m_pCtrlWnd->_maxy))
     return;
   
   int y = event.y - m_pCtrlWnd->_begy;
-  
-  switch(y)
+  if(event.bstate & BUTTON1_PRESSED)
+    m_pressedButton = (CtrlPos)y;
+  else if(event.bstate & BUTTON1_RELEASED)
   {
-  case CtrlPos::Pos_Start:
-    m_pCore->start();
-    break;
-  case CtrlPos::Pos_Pause:
-    m_pCore->pause();
-    break;
-  case CtrlPos::Pos_Stop:
-    m_pCore->stop();
-    break;
-  case CtrlPos::Pos_Quit:
-    m_isQuit = true;
-    break;
-  default:
-    break;
+    switch(y)
+    {
+    case CtrlPos::Pos_Start:
+      m_pCore->start();
+      break;
+    case CtrlPos::Pos_Pause:
+      m_pCore->pause();
+      break;
+    case CtrlPos::Pos_Stop:
+      m_pCore->stop();
+      break;
+    case CtrlPos::Pos_Quit:
+      m_isQuit = true;
+      break;
+    default:
+      break;
+    }
   }
 }
 
@@ -237,11 +250,16 @@ void ConsoleTetris::paintBoard()
 void ConsoleTetris::paintCtrl()
 {
   wattron(m_pCtrlWnd, A_REVERSE | COLOR_PAIR(m_menuColorId));
-  mvwprintw(m_pCtrlWnd, CtrlPos::Pos_Start, 0, " Start ");
-  mvwprintw(m_pCtrlWnd, CtrlPos::Pos_Pause, 0, " Pause ");
-  mvwprintw(m_pCtrlWnd, CtrlPos::Pos_Stop , 0, " Stop  ");
-  mvwprintw(m_pCtrlWnd, CtrlPos::Pos_Quit , 0, " Quit  ");
+  for(ButtonMap::iterator it = m_btnMap.begin(); it != m_btnMap.end(); ++it)
+  {
+    if(m_pressedButton == it->first)
+      continue;
+    mvwprintw(m_pCtrlWnd, it->first, 0, it->second.data());
+  }
   wattroff(m_pCtrlWnd, A_REVERSE | COLOR_PAIR(m_menuColorId));
+  
+  if(m_btnMap.count(m_pressedButton) > 0)
+    mvwprintw(m_pCtrlWnd, m_pressedButton, 0, m_btnMap[m_pressedButton].data());
   
   wrefresh(m_pCtrlWnd);
 }
