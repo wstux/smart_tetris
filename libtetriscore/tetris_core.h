@@ -24,6 +24,7 @@
 #ifndef TETRIS_CORE_H
 #define TETRIS_CORE_H
 
+#include <deque>
 #include <iosfwd>
 #include <vector>
 
@@ -45,7 +46,7 @@ private:
 public:
   typedef std::vector<ShapeType> BoardLine;
   
-  typedef std::vector< BoardLine > Board;
+  typedef std::deque< BoardLine > Board;
       
       
 public:
