@@ -24,10 +24,10 @@
 #include <cstdlib>
 #include <ctime>
 
-#include "console_tetris.h"
+#include "details/console_tetris.h"
 
 
-int main(int argc, char** argv)
+int main(int /*argc*/, char** /*argv*/)
 {
   srand(time(NULL));
   

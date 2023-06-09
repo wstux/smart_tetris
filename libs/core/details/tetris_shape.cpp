@@ -21,7 +21,7 @@
  * 
  */
 
-#include "tetris_shape.h"
+#include "core/tetris_shape.h"
 
 #include <cassert>
 #include <cmath>

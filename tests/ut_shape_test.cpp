@@ -27,7 +27,7 @@
 #include <iostream>
 #include <iomanip>
 
-#include "tetris_shape.h"
+#include "core/tetris_shape.h"
 
 /*
  * Simple C++ Test Suite
@@ -144,7 +144,7 @@ void testNoneRotate()
 }
 
 
-int main(int argc, char** argv)
+int main(int /*argc*/, char** /*argv*/)
 {
   clock_t allTestsTime;
   clock_t testTime;
