@@ -22,6 +22,9 @@ include(${COMMON_MAIN_CMAKE} PUBLIC)
 # Include source code
 ################################################################################
 
+include(find_packages.cmake PUBLIC)
+
 add_subdirectory(libs/core)
+add_subdirectory(src/console)
 add_subdirectory(tests)
 
