@@ -27,7 +27,7 @@
 #include <iomanip>
 #include <string>
 
-#include "tetris_core.h"
+#include "core/tetris_core.h"
 
 /*
  * Simple C++ Test Suite
@@ -208,7 +208,7 @@ void testTimeout()
 }
 
 
-int main(int argc, char** argv)
+int main(int /*argc*/, char** /*argv*/)
 {
   clock_t allTestsTime;
   clock_t testTime;

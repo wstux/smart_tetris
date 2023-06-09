@@ -23,4 +23,5 @@ include(${COMMON_MAIN_CMAKE} PUBLIC)
 ################################################################################
 
 add_subdirectory(libs/core)
+add_subdirectory(tests)
 
