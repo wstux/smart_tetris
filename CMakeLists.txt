@@ -24,6 +24,7 @@ include(${COMMON_MAIN_CMAKE} PUBLIC)
 
 include(find_packages.cmake PUBLIC)
 
+add_subdirectory(externals)
 add_subdirectory(libs/core)
 add_subdirectory(src/console)
 add_subdirectory(tests)

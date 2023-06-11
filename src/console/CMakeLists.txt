@@ -8,6 +8,5 @@ ExecTarget(tetris_cli
         core
     DEPENDS
         ncurses
-#        boost
 )
 

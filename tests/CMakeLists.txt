@@ -3,6 +3,8 @@ TestTarget(ut_core_test
         ut_core_test.cpp
     LIBRARIES
         core
+    DEPENDS
+        testing
 )
 
 TestTarget(ut_shape_test
@@ -10,5 +12,7 @@ TestTarget(ut_shape_test
         ut_shape_test.cpp
     LIBRARIES
         core
+    DEPENDS
+        testing
 )
 

@@ -1,3 +1,6 @@
 [submodule "cmake"]
 	path = cmake
 	url = https://github.com/wstux/cmake_cpp_project_template.git
+[submodule "externals/testing"]
+	path = externals/testing
+	url = https://github.com/wstux/testing_template.git

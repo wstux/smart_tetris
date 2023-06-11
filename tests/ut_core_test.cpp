@@ -23,9 +23,8 @@
 
 #include <stdlib.h>
 #include <ctime>
-#include <iostream>
-#include <iomanip>
-#include <string>
+
+#include <testing/testdefs.h>
 
 #include "core/tetris_core.h"
 
@@ -34,243 +33,139 @@
  */
 
 
-void testGame()
+TEST(core_fixture, game)
 {
-  tetris::core::TetrisCore tetrisCore;
-  tetrisCore.start();
-  
-  tetris::core::TetrisCore::Board oldBoard = tetrisCore.board();
-  tetris::core::TetrisCore::Board tetrisBoard;
-  
-  bool result(true);
-  for(int i = 0; i < 30; ++i)
-  {
-    tetrisCore.gameStep();
-    tetrisBoard = tetrisCore.board();
-    
-    result &= tetrisBoard == oldBoard;
-    if( result )
-      break;
-        
-    oldBoard = tetrisBoard;
-  }
-  
-  if( result )
-  {
-    std::cout << "%TEST_FAILED% time=0 testname=testGame (core_test) message=error plying to game" << std::endl;
-    std::cout << "tetrisBoard:\n" << tetrisBoard << std::endl;
-  }
+    tetris::core::TetrisCore core;
+    core.start();
+
+    tetris::core::TetrisCore::Board old_board = core.board();
+
+    for(size_t i = 0; i < 30; ++i) {
+        core.gameStep();
+        tetris::core::TetrisCore::Board board = core.board();
+
+        EXPECT_TRUE(board != old_board) << board;
+    }
 }
 
-
-void testGamePause()
+TEST(core_fixture, pause)
 {
-  tetris::core::TetrisCore tetrisCore;
-  tetrisCore.start();
-  for(int i = 0; i != 10; ++i)
-    tetrisCore.gameStep();
-  
-  tetris::core::TetrisCore::Board oldBoard = tetrisCore.board();
-  
-  tetrisCore.pause();
-  for(int i = 0; i != 10; ++i)
-    tetrisCore.gameStep();
+    tetris::core::TetrisCore core;
+    core.start();
+    for(size_t i = 0; i < 10; ++i) {
+        core.gameStep();
+    }
+
+    tetris::core::TetrisCore::Board old_board = core.board();
+
+    core.pause();
+    for(size_t i = 0; i < 10; ++i) {
+        core.gameStep();
+    }
       
-  tetris::core::TetrisCore::Board tetrisBoard = tetrisCore.board();
-  if( oldBoard != tetrisBoard )
-  {
-    std::cout << "%TEST_FAILED% time=0 testname=testGamePause (core_test) message=error pause game" << std::endl;
-    std::cout << "tetrisBoard:\n" << tetrisBoard << std::endl;
-  }
+    tetris::core::TetrisCore::Board board = core.board();
+    EXPECT_TRUE(board == old_board) << board;
 }
 
-
-void testFastForward()
+TEST(core_fixture, forward)
 {
-  bool result(true);
-  std::string errorMsg;
-  
-  tetris::core::TetrisCore tetrisCore;
-  tetris::core::TetrisCore::Board oldBoard = tetrisCore.board();
-  tetris::core::TetrisCore::Board tetrisBoard;
-  
-  for(int i = 0; i != 10; ++i)
-    tetrisCore.fastForward();
-  
-  tetrisBoard = tetrisCore.board();
-  result &= tetrisBoard == oldBoard;
-  oldBoard = tetrisBoard;
-  if(!result)
-    errorMsg += "fastForward work without call start function; ";
-  tetrisCore.start();
-  for(int i = 0; i != 10; ++i)
-    tetrisCore.fastForward();
-  
-  tetrisBoard = tetrisCore.board();
-  result &= tetrisBoard != oldBoard;
-  oldBoard = tetrisBoard;
-  if(!result)
-    errorMsg += "fastForward don't work without call start function; ";
-  
-  tetrisCore.pause();
-  for(int i = 0; i != 10; ++i)
-    tetrisCore.fastForward();
-  
-  tetrisBoard = tetrisCore.board();
-  result &= tetrisBoard == oldBoard;
-  if(!result)
-    errorMsg += "fastForward work with call pause function; ";
-  
-  if( !result )
-  {
-    std::cout << "%TEST_FAILED% time=0 testname=testFastForward (core_test) message=error " << errorMsg << std::endl;
-    std::cout << "oldBoard:\n" << oldBoard << std::endl;
-    std::cout << "tetrisBoard:\n" << tetrisBoard << std::endl;
-  }
+    tetris::core::TetrisCore core;
+    tetris::core::TetrisCore::Board old_board = core.board();
+    tetris::core::TetrisCore::Board board;
+
+    for(size_t i = 0; i < 10; ++i) {
+        core.fastForward();
+    }
+
+    board = core.board();
+    EXPECT_TRUE(board == old_board) << "forward works without start game";
+
+    old_board = board;
+    core.start();
+    for(size_t i = 0; i < 10; ++i) {
+        core.fastForward();
+    }
+
+    board = core.board();
+    EXPECT_TRUE(board != old_board) << "forward doesn't works with start game";
+
+    old_board = board;
+    core.pause();
+    for(size_t i = 0; i < 10; ++i) {
+        core.fastForward();
+    }
+
+    board = core.board();
+    EXPECT_TRUE(board == old_board) << "forward works with pause game";
 }
 
-
-void testMoveLeft()
+TEST(core_fixture, move_left)
 {
-  tetris::core::TetrisCore tetrisCore;
-  tetrisCore.start();
-  for(int i = 0; i < 100; ++i)
-    tetrisCore.moveLeft();
-  tetris::core::TetrisCore::Board tetrisBoard = tetrisCore.board();
-  
-  tetris::core::TetrisCore::Board zeroBoard;
-  zeroBoard.resize( tetrisCore.boardHeight() );
-  for(int i = 0; i < tetrisCore.boardHeight(); ++i)
-    zeroBoard[i].resize(tetrisCore.boardWidth(), tetris::core::ShapeType::NoShape);
-  
-  if( tetrisBoard == zeroBoard )
-  {
-    std::cout << "%TEST_FAILED% time=0 testname=testMoveLeft (core_test) message=error move block to left" << std::endl;
-    std::cout << "tetrisBoard:\n" << tetrisBoard << std::endl;
-  }
+    tetris::core::TetrisCore core;
+    core.start();
+    for(size_t i = 0; i < 100; ++i) {
+        core.moveLeft();
+    }
+    tetris::core::TetrisCore::Board board = core.board();
+
+    tetris::core::TetrisCore::Board zero_board;
+    zero_board.resize(core.boardHeight());
+    for(int i = 0; i < core.boardHeight(); ++i) {
+        zero_board[i].resize(core.boardWidth(), tetris::core::ShapeType::NoShape);
+    }
+
+    EXPECT_TRUE(board != zero_board);
 }
 
-
-void testMoveRight()
+TEST(core_fixture, move_right)
 {
-  tetris::core::TetrisCore tetrisCore;
-  tetrisCore.start();
-  for(int i = 0; i < 100; ++i)
-    tetrisCore.moveRight();
-  tetris::core::TetrisCore::Board tetrisBoard = tetrisCore.board();
-  
-  tetris::core::TetrisCore::Board zeroBoard;
-  zeroBoard.resize( tetrisCore.boardHeight() );
-  for(int i = 0; i < tetrisCore.boardHeight(); ++i)
-    zeroBoard[i].resize(tetrisCore.boardWidth(), tetris::core::ShapeType::NoShape);
-    
-  if( tetrisBoard == zeroBoard )
-  {
-    std::cout << "%TEST_FAILED% time=0 testname=testMoveRight (core_test) message=error move block to right" << std::endl;
-    std::cout << "tetrisBoard:\n" << tetrisBoard << std::endl;
-  }
+    tetris::core::TetrisCore core;
+    core.start();
+    for(size_t i = 0; i < 100; ++i) {
+        core.moveRight();
+    }
+    tetris::core::TetrisCore::Board board = core.board();
+
+    tetris::core::TetrisCore::Board zero_board;
+    zero_board.resize(core.boardHeight());
+    for(int i = 0; i < core.boardHeight(); ++i) {
+        zero_board[i].resize(core.boardWidth(), tetris::core::ShapeType::NoShape);
+    }
+
+    EXPECT_TRUE(board != zero_board);
 }
 
-
-void testStart()
+TEST(core_fixture, start)
 {
-  tetris::core::TetrisCore tetrisCore;
-  tetrisCore.start();
-  tetris::core::TetrisCore::Board tetrisBoard = tetrisCore.board();
+    tetris::core::TetrisCore core;
+    core.start();
+    tetris::core::TetrisCore::Board board = core.board();
   
-  tetris::core::TetrisCore::Board board;
-  board.resize( tetrisCore.boardHeight() );
-  for(int i = 0; i < tetrisCore.boardHeight(); ++i)
-    board[i].resize(tetrisCore.boardWidth(), tetris::core::ShapeType::NoShape);
-    
-  if( tetrisBoard == board )
-  {
-    std::cout << "%TEST_FAILED% time=0 testname=testStart (core_test) message=error start game" << std::endl;
-    std::cout << "tetrisBoard:\n" << tetrisBoard << std::endl;
-  }
+    tetris::core::TetrisCore::Board zero_board;
+    zero_board.resize(core.boardHeight());
+    for(int i = 0; i < core.boardHeight(); ++i) {
+        zero_board[i].resize(core.boardWidth(), tetris::core::ShapeType::NoShape);
+    }
+
+    EXPECT_TRUE(board != zero_board);
 }
 
-
-void testTimeout()
+TEST(core_fixture, timeout)
 {
-  tetris::core::TetrisCore tetrisCore;
-  tetris::core::TetrisCore::Board oldBoard = tetrisCore.board();
-  
-  for(int i = 0; i != 10; ++i)
-    tetrisCore.gameStep();
-      
-  tetris::core::TetrisCore::Board tetrisBoard = tetrisCore.board();
-  if( oldBoard != tetrisBoard )
-  {
-    std::cout << "%TEST_FAILED% time=0 testname=testTimeout (core_test) message=error game playing without preess start" << std::endl;
-    std::cout << "tetrisBoard:\n" << tetrisBoard << std::endl;
-  }
+    tetris::core::TetrisCore core;
+    tetris::core::TetrisCore::Board old_board = core.board();
+
+    for(size_t i = 0; i < 10; ++i) {
+        core.gameStep();
+    }
+
+    tetris::core::TetrisCore::Board board = core.board();
+    EXPECT_TRUE(board == old_board);
 }
 
 
 int main(int /*argc*/, char** /*argv*/)
 {
-  clock_t allTestsTime;
-  clock_t testTime;
-  
-  std::cout << std::fixed << std::setprecision(2);
-  std::cout << "%SUITE_STARTING% core_test" << std::endl;
-  std::cout << "%SUITE_STARTED%" << std::endl;
-  
-  allTestsTime = clock();
-
-  // testGame
-  std::cout << "%TEST_STARTED% testGame (core_test)\n" << std::endl;
-  testTime = clock();
-  testGame();
-  testTime = clock() - testTime;
-  std::cout << "%TEST_FINISHED% time=" << ( ((float)testTime) / CLOCKS_PER_SEC ) << " testGame (core_test)" << std::endl;
-  
-  // testGamePause
-  std::cout << "%TEST_STARTED% testGamePause (core_test)\n" << std::endl;
-  testTime = clock();
-  testGamePause();
-  testTime = clock() - testTime;
-  std::cout << "%TEST_FINISHED% time=" << ( ((float)testTime) / CLOCKS_PER_SEC ) << " testGamePause (core_test)" << std::endl;  
-  
-  // testFastForward
-  std::cout << "%TEST_STARTED% testFastForward (core_test)\n" << std::endl;
-  testTime = clock();
-  testFastForward();
-  testTime = clock() - testTime;
-  std::cout << "%TEST_FINISHED% time=" << ( ((float)testTime) / CLOCKS_PER_SEC ) << " testFastForward (core_test)" << std::endl;  
-  
-  // testMoveLeft
-  std::cout << "%TEST_STARTED% testMoveLeft (core_test)\n" << std::endl;
-  testTime = clock();
-  testMoveLeft();
-  testTime = clock() - testTime;
-  std::cout << "%TEST_FINISHED% time=" << ( ((float)testTime) / CLOCKS_PER_SEC ) << " testMoveLeft (core_test)" << std::endl;
-  
-  // testMoveRight
-  std::cout << "%TEST_STARTED% testMoveRight (core_test)\n" << std::endl;
-  testTime = clock();
-  testMoveRight();
-  testTime = clock() - testTime;
-  std::cout << "%TEST_FINISHED% time=" << ( ((float)testTime) / CLOCKS_PER_SEC ) << " testMoveRight (core_test)" << std::endl;
-  
-  // testStart
-  std::cout << "%TEST_STARTED% testStart (core_test)\n" << std::endl;
-  testTime = clock();
-  testStart();
-  testTime = clock() - testTime;
-  std::cout << "%TEST_FINISHED% time=" << ( ((float)testTime) / CLOCKS_PER_SEC ) << " testStart (core_test)" << std::endl;
-  
-  // testTimeout
-  std::cout << "%TEST_STARTED% testTimeout (core_test)\n" << std::endl;
-  testTime = clock();
-  testTimeout();
-  testTime = clock() - testTime;
-  std::cout << "%TEST_FINISHED% time=" << ( ((float)testTime) / CLOCKS_PER_SEC ) << " testTimeout (core_test)" << std::endl;
-
-  allTestsTime = clock() - allTestsTime;
-  std::cout << "%SUITE_FINISHED% time=" << ( ((float)allTestsTime) / CLOCKS_PER_SEC ) << std::endl;
-
-  return (EXIT_SUCCESS);
+    return RUN_ALL_TESTS();
 }
 
