@@ -21,186 +21,113 @@
  * 
  */
 
-#include <algorithm>
 #include <cstdlib>
 #include <ctime>
-#include <iostream>
-#include <iomanip>
+#include <algorithm>
+
+#include <testing/testdefs.h>
 
 #include "core/tetris_shape.h"
 
-/*
- * Simple C++ Test Suite
- */
-
-
-void testShape()
+TEST(shape_fixture, create)
 {
-  srand(time(NULL));
+    ::srand(::time(NULL));
+
+    tetris::core::Shape shape;
+    shape.setRandomShape();
   
-  tetris::core::Shape shape;
-  shape.setRandomShape();
+    tetris::core::Shape newShape = shape;
   
-  tetris::core::Shape newShape = shape;
-  
-  if(shape != newShape)
-  {
-    std::cout << "%TEST_FAILED% time=0 testname=testShape (shape_test) message=error create shape" << std::endl;
-    std::cout << "shape:\n" << shape << std::endl;
-    std::cout << "newShape:\n" << newShape << std::endl;
-  }
+    EXPECT_TRUE(shape == newShape);
 }
 
-
-void testShapeElements()
+TEST(shape_fixture, element_positions)
 {
-  srand(time(NULL));
-  
-  tetris::core::Shape shape;
-  shape.setShape(tetris::core::ShapeType::LShape, tetris::core::Shape::RotateType::Bottom);
-  tetris::core::ShapeBlock block;
-  block[0] = tetris::core::Position(0, 1);
-  block[1] = tetris::core::Position(1, 1);
-  block[2] = tetris::core::Position(2, 1);
-  block[3] = tetris::core::Position(0, 2);
-  
-  bool result(true);
-  for(const tetris::core::Position &origPos : shape.block())
-  {
-    if( std::find_if( block.begin(), block.end(), [&origPos](const tetris::core::Position &pos) -> bool { return origPos == pos; } ) == block.end())
-      result = false;
-  }
-    
-  if( !result )
-  {
-    std::cout << "%TEST_FAILED% time=0 testname=testShapeElements (shape_test) message=error shape element positions" << std::endl;
-    std::cout << "shape:\n" << shape << std::endl;
-  }
+    ::srand(::time(NULL));
+
+    tetris::core::Shape shape;
+    shape.setShape(tetris::core::ShapeType::LShape,
+                   tetris::core::Shape::RotateType::Bottom);
+
+    tetris::core::ShapeBlock block;
+    block[0] = tetris::core::Position(0, 1);
+    block[1] = tetris::core::Position(1, 1);
+    block[2] = tetris::core::Position(2, 1);
+    block[3] = tetris::core::Position(0, 2);
+
+    for(const tetris::core::Position &origPos : shape.block()) {
+        tetris::core::ShapeBlock::const_iterator it = 
+            std::find_if(block.begin(), block.end(),
+                         [&origPos](const tetris::core::Position &pos) -> bool {
+                             return origPos == pos;
+                         });
+        EXPECT_TRUE(it != block.end())
+            << "position[" << origPos.x << "; " << origPos.y << "] not found"
+            << std::endl << "shape:\n" << shape;
+    }
 }
 
-
-void testRotate()
+TEST(shape_fixture, rotate)
 {
-  tetris::core::Shape shape( tetris::core::ShapeType::LShape, tetris::core::Shape::RotateType::Bottom );
-  shape.rotate(1);
-  
-  tetris::core::Shape ethalonShape( tetris::core::ShapeType::LShape, tetris::core::Shape::RotateType::Left );
-  
-  if( shape != ethalonShape )
-  {
-    std::cout << "%TEST_FAILED% time=0 testname=testRotate (shape_test) message=error rotate shape" << std::endl;
-    std::cout << "shape:\n" << shape << std::endl;
-    std::cout << "ethalonShape:\n" << ethalonShape << std::endl;
-  }
-}
+    tetris::core::Shape ethalon(tetris::core::ShapeType::LShape,
+                                tetris::core::Shape::RotateType::Left);
 
-
-void testCircleRotate()
-{
-  tetris::core::Shape shape( tetris::core::ShapeType::LShape, tetris::core::Shape::RotateType::Bottom );
-  for(int i =0; i < 5; ++i)
+    tetris::core::Shape shape(tetris::core::ShapeType::LShape,
+                              tetris::core::Shape::RotateType::Bottom );
     shape.rotate(1);
-  
-  tetris::core::Shape ethalonShape( tetris::core::ShapeType::LShape, tetris::core::Shape::RotateType::Left );
-  
-  if( shape != ethalonShape )
-  {
-    std::cout << "%TEST_FAILED% time=0 testname=testCircleRotate (shape_test) message=error rotate shape" << std::endl;
-    std::cout << "shape:\n" << shape << std::endl;
-    std::cout << "ethalonShape:\n" << ethalonShape << std::endl;
-  }
+
+    EXPECT_TRUE(shape == ethalon)
+        << "shape:" << std::endl << shape << std::endl
+        << "ethalon:" << std::endl << ethalon;
 }
 
-
-void testBackRotate()
+TEST(shape_fixture, circle_rotate)
 {
-  tetris::core::Shape shape( tetris::core::ShapeType::LShape, tetris::core::Shape::RotateType::Bottom );
-  shape.rotate(-1);
-  
-  tetris::core::Shape ethalonShape( tetris::core::ShapeType::LShape, tetris::core::Shape::RotateType::Right );
-  
-  if( shape != ethalonShape )
-  {
-    std::cout << "%TEST_FAILED% time=0 testname=testBackRotate (shape_test) message=error back rotate shape" << std::endl;
-    std::cout << "shape:\n" << shape << std::endl;
-    std::cout << "ethalonShape:\n" << ethalonShape << std::endl;
-  }
+    tetris::core::Shape ethalon(tetris::core::ShapeType::LShape,
+                                tetris::core::Shape::RotateType::Left);
+
+    tetris::core::Shape shape(tetris::core::ShapeType::LShape,
+                              tetris::core::Shape::RotateType::Bottom);
+    for(size_t i = 0; i < 5; ++i) {
+        shape.rotate(1);
+    }
+
+    EXPECT_TRUE(shape == ethalon)
+        << "shape:" << std::endl << shape << std::endl
+        << "ethalon:" << std::endl << ethalon;
 }
 
-
-void testNoneRotate()
+TEST(shape_fixture, back_rotate)
 {
-  tetris::core::Shape shape( tetris::core::ShapeType::LShape, tetris::core::Shape::RotateType::Bottom );
-  shape.rotate(0);
-  
-  tetris::core::Shape ethalonShape( tetris::core::ShapeType::LShape, tetris::core::Shape::RotateType::Bottom );
-  
-  if( shape != ethalonShape )
-  {
-    std::cout << "%TEST_FAILED% time=0 testname=testNoneRotate (shape_test) message=error back rotate shape" << std::endl;
-    std::cout << "shape:\n" << shape << std::endl;
-    std::cout << "ethalonShape:\n" << ethalonShape << std::endl;
-  }
+    tetris::core::Shape ethalon(tetris::core::ShapeType::LShape,
+                                tetris::core::Shape::RotateType::Right);
+
+    tetris::core::Shape shape(tetris::core::ShapeType::LShape,
+                              tetris::core::Shape::RotateType::Bottom);
+    shape.rotate(-1);
+
+    EXPECT_TRUE(shape == ethalon)
+        << "shape:" << std::endl << shape << std::endl
+        << "ethalon:" << std::endl << ethalon;
+}
+
+TEST(shape_fixture, none_rotate)
+{
+    tetris::core::Shape ethalon(tetris::core::ShapeType::LShape,
+                                tetris::core::Shape::RotateType::Bottom);
+
+    tetris::core::Shape shape(tetris::core::ShapeType::LShape,
+                              tetris::core::Shape::RotateType::Bottom);
+    shape.rotate(0);
+
+    EXPECT_TRUE(shape == ethalon)
+        << "shape:" << std::endl << shape << std::endl
+        << "ethalon:" << std::endl << ethalon;
 }
 
 
 int main(int /*argc*/, char** /*argv*/)
 {
-  clock_t allTestsTime;
-  clock_t testTime;
-  
-  std::cout << std::fixed << std::setprecision(2);
-  std::cout << "%SUITE_STARTING% shape_test" << std::endl;
-  std::cout << "%SUITE_STARTED%" << std::endl;
-
-  allTestsTime = clock();
-  
-  // testShape
-  std::cout << "%TEST_STARTED% testShape (shape_test)" << std::endl;
-  testTime = clock();
-  testShape();
-  testTime = clock() - testTime;
-  std::cout << "%TEST_FINISHED% time=" << ( ((float)testTime) / CLOCKS_PER_SEC ) << " testShape (shape_test)" << std::endl;
-  
-  // testShapeElements
-  std::cout << "%TEST_STARTED% testShapeElements (shape_test)" << std::endl;
-  testTime = clock();
-  testShapeElements();
-  testTime = clock() - testTime;
-  std::cout << "%TEST_FINISHED% time=" << ( ((float)testTime) / CLOCKS_PER_SEC ) << " testShapeElements (shape_test)" << std::endl;
-
-  // testRotate
-  std::cout << "%TEST_STARTED% testRotate (shape_test)" << std::endl;
-  testTime = clock();
-  testRotate();
-  testTime = clock() - testTime;
-  std::cout << "%TEST_FINISHED% time=" << ( ((float)testTime) / CLOCKS_PER_SEC ) << " testRotate (shape_test)" << std::endl;
-  
-  // testCircleRotate
-  std::cout << "%TEST_STARTED% testCircleRotate (shape_test)" << std::endl;
-  testTime = clock();
-  testCircleRotate();
-  testTime = clock() - testTime;
-  std::cout << "%TEST_FINISHED% time=" << ( ((float)testTime) / CLOCKS_PER_SEC ) << " testCircleRotate (shape_test)" << std::endl;
-  
-  // testBackRotate
-  std::cout << "%TEST_STARTED% testBackRotate (shape_test)" << std::endl;
-  testTime = clock();
-  testBackRotate();
-  testTime = clock() - testTime;
-  std::cout << "%TEST_FINISHED% time=" << ( ((float)testTime) / CLOCKS_PER_SEC ) << " testBackRotate (shape_test)" << std::endl;
-  
-  // testNoneRotate
-  std::cout << "%TEST_STARTED% testNoneRotate (shape_test)" << std::endl;
-  testTime = clock();
-  testNoneRotate();
-  testTime = clock() - testTime;
-  std::cout << "%TEST_FINISHED% time=" << ( ((float)testTime) / CLOCKS_PER_SEC ) << " testNoneRotate (shape_test)" << std::endl;
-
-  
-  allTestsTime = clock() - allTestsTime;
-  std::cout << "%SUITE_FINISHED% time=" << ( ((float)allTestsTime) / CLOCKS_PER_SEC ) << std::endl;
-
-  return (EXIT_SUCCESS);
+    return RUN_ALL_TESTS();
 }
 
